@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Career Prediction</title>
+    <link rel="stylesheet" href="/static/bootstrap.min.css" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="/">Career Predictor</a>
+        <a class="btn btn-danger" href="/logout">Logout</a>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      {% if student_name %}
+    <h4 class="text-start text-muted mb-4">Welcome, <strong>{{ student_name }}</strong> 👋</h4>
+  {% endif %}
+      <h2 class="text-center fw-bold mb-5">Enter Each Subject's Score for Prediction</h2>
+      <form method="POST">
+        <div class="row">
+          {% for subject in ['english', 'math', 'social', 'agric', 'phe',
+          'btech', 'computer', 'business', 'religious_studies', 'cca', 'yoruba'] %}
+          <div class="col-md-4">
+          <label>{{ subject.upper() }}</label>
+          <input type="number" class="form-control" name="{{ subject }}" required />
+          </div>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-success mt-5 w-100">
+          Predict
+        </button>
+      </form>
+
+      {% if prediction %}
+      <h3 class="text-center text-primary mt-4">{{ prediction }}</h3>
+      {% endif %}
+    </div>
+  </body>
+</html>
