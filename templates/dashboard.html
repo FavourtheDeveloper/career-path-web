@@ -15,16 +15,26 @@
 
     <div class="container mt-4">
       {% if student_name %}
-    <h4 class="text-start text-muted mb-4">Welcome, <strong>{{ student_name }}</strong> 👋</h4>
-  {% endif %}
-      <h4 class="text-center mb-4">Enter Subject Scores to Identify Your Cluster Group</h4>
+      <h4 class="text-start text-muted mb-4">
+        Welcome, <strong>{{ student_name }}</strong> 👋
+      </h4>
+      {% endif %}
+      <h4 class="text-center mb-4">
+        Enter Subject Scores to Identify Your Cluster Group
+      </h4>
       <form method="POST">
         <div class="row">
           {% for subject in ['english', 'math', 'social', 'agric', 'phe',
-          'btech', 'computer', 'business', 'religious_studies', 'cca', 'yoruba'] %}
+          'btech', 'computer', 'business', 'religious_studies', 'cca', 'yoruba']
+          %}
           <div class="col-md-4">
-          <label>{{ subject.upper() }}</label>
-          <input type="number" class="form-control" name="{{ subject }}" required />
+            <label>{{ subject.upper() }}</label>
+            <input
+              type="number"
+              class="form-control"
+              name="{{ subject }}"
+              required
+            />
           </div>
           {% endfor %}
         </div>
@@ -34,7 +44,9 @@
       </form>
 
       {% if prediction %}
-      <h3 class="text-center text-primary mt-4">{{ prediction }}</h3>
+      <div class="alert alert-info text-center mt-4" style="font-size: 1.1rem">
+        {{ prediction | safe }}
+      </div>
       {% endif %}
     </div>
   </body>

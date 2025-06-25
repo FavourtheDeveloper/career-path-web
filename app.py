@@ -97,6 +97,88 @@ def dashboard():
             "YORUBA": "yoruba"
         }
 
+        scores = []
+        for subject in feature_order:
+            form_key = form_key_map.get(subject)
+            try:
+                val = float(request.form.get(form_key, 0))
+            except (TypeError, ValueError):
+                val = 0.0
+            scores.append(val)
+
+        input_data = np.array(scores).reshape(1, -1)
+        input_scaled = scaler.transform(input_data)
+        cluster = model.predict(input_scaled)[0]
+
+        label = cluster_labels.get(cluster, f"Cluster-{cluster}")
+        prediction = f"You belong to Cluster-{cluster}: {label.split(':')[-1].strip().capitalize()}"
+
+    return render_template("dashboard.html", prediction=prediction, student_name=student_name)
+
+    student_name = session.get("student_name")
+    prediction = None
+
+    if request.method == "POST":
+        form_key_map = {
+            "ENGLISH": "english",
+            "MATHEMATICS": "math",
+            "SOCIAL STUDIES": "social",
+            "AGRIC SCIENCE": "agric",
+            "PHE": "phe",
+            "BASIC TECH": "btech",
+            "COMPUTER": "computer",
+            "BUSINESS STUDIES": "business",
+            "IRS/CRS": "religious_studies",
+            "CCA": "cca",
+            "YORUBA": "yoruba"
+        }
+
+        # Collect and map scores in training order
+        scores = []
+        for subject in feature_order:
+            form_key = form_key_map.get(subject)
+            try:
+                val = float(request.form.get(form_key, 0))
+            except (TypeError, ValueError):
+                val = 0.0
+            scores.append(val)
+
+        # Standardize input and predict cluster
+        input_data = np.array(scores).reshape(1, -1)
+        input_scaled = scaler.transform(input_data)
+        predicted_cluster = model.predict(input_scaled)[0]
+
+        # Build multiline output with all clusters
+        prediction_lines = []
+        for i in sorted(cluster_labels):
+            label = cluster_labels[i]
+            if i == predicted_cluster:
+                prediction_lines.append(f"<strong>You belong to Cluster-{i+1}: {label}</strong>")
+            else:
+                prediction_lines.append(f"You belong to Cluster-{i+1}: {label}")
+
+        prediction = "<br>".join(prediction_lines)
+
+    return render_template("dashboard.html", prediction=prediction, student_name=student_name)
+
+    student_name = session.get("student_name")
+    prediction = None
+
+    if request.method == "POST":
+        form_key_map = {
+            "ENGLISH": "english",
+            "MATHEMATICS": "math",
+            "SOCIAL STUDIES": "social",
+            "AGRIC SCIENCE": "agric",
+            "PHE": "phe",
+            "BASIC TECH": "btech",
+            "COMPUTER": "computer",
+            "BUSINESS STUDIES": "business",
+            "IRS/CRS": "religious_studies",
+            "CCA": "cca",
+            "YORUBA": "yoruba"
+        }
+
         # Collect and map scores in training order
         scores = []
         for subject in feature_order:

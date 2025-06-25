@@ -4,7 +4,6 @@ import os
 import pickle
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
 
 # === Load dataset ===
 df = pd.read_excel("my_datasets.xlsx", sheet_name=0)
@@ -19,36 +18,32 @@ feature_order = [
 available_subjects = [subj for subj in feature_order if subj in df.columns]
 df[available_subjects] = df[available_subjects].apply(pd.to_numeric, errors='coerce').fillna(0)
 
+# === Apply rules to filter only meaningful students ===
+def passed_all(subjects, row):
+    return all(row.get(subj, 0) >= 60 for subj in subjects)
+
+science = ['MATHEMATICS', 'BASIC TECH', 'COMPUTER', 'AGRIC SCIENCE', 'PHE']
+commercial = ['MATHEMATICS', 'BUSINESS STUDIES', 'COMPUTER', 'SOCIAL STUDIES', 'ENGLISH']
+arts = ['ENGLISH', 'YORUBA', 'SOCIAL STUDIES', 'CCA', 'IRS/CRS']
+
+def is_valid(row):
+    return (
+        passed_all(science, row) or
+        passed_all(commercial, row) or
+        passed_all(arts, row)
+    )
+
+df = df[df.apply(is_valid, axis=1)]  # Remove "General Studies"
+
 # === Standardize features ===
 X = df[available_subjects].values
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# === Optional: Elbow method for optimal k ===
-# inertia = []
-# for k in range(1, 10):
-#     km = KMeans(n_clusters=k, random_state=42)
-#     km.fit(X_scaled)
-#     inertia.append(km.inertia_)
-# plt.plot(range(1, 10), inertia, marker='o')
-# plt.xlabel('Number of Clusters (k)')
-# plt.ylabel('Inertia')
-# plt.title('Elbow Method for Optimal k')
-# plt.grid(True)
-# plt.show()
-
 # === Train KMeans model ===
-k = 4
+k = 3  # Now only 3 clusters
 model = KMeans(n_clusters=k, random_state=42)
 model.fit(X_scaled)
-
-# === Define human-readable labels for clusters ===
-cluster_labels = {
-    0: "Likely Science Track",
-    1: "Likely Arts Track",
-    2: "Likely Commercial Track",
-    3: "General Studies"
-}
 
 # === Save models and config ===
 os.makedirs("models", exist_ok=True)
@@ -61,10 +56,14 @@ with open("models/scaler.pkl", "wb") as f:
 
 career_config = {
     "feature_order": available_subjects,
-    "cluster_labels": cluster_labels
+    "cluster_labels": {
+        0: "Science",
+        1: "Commercial",
+        2: "Arts"
+    }
 }
 
 with open("models/career_config.pkl", "wb") as f:
     pickle.dump(career_config, f)
 
-print(f"\n✅ KMeans model (k={k}) trained and saved successfully with cluster label mapping.")
+print(f"\n✅ Model trained with only Science, Commercial, and Arts clusters.")
