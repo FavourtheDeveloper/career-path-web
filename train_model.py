@@ -57,9 +57,9 @@ with open("models/scaler.pkl", "wb") as f:
 career_config = {
     "feature_order": available_subjects,
     "cluster_labels": {
-        0: "Science",
-        1: "Commercial",
-        2: "Arts"
+        0: "Arts",
+        1: "Science",
+        2: "Commercial"
     }
 }
 
